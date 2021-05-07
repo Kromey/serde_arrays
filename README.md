@@ -1,5 +1,9 @@
 # serde_arrays
 
+[![Docs](https://docs.rs/serde_arrays/badge.svg)](https://docs.rs/serde_arrays/)
+[![Crates.io](https://img.shields.io/crates/v/serde_arrays.svg)](https://crates.io/crates/serde_arrays)
+[![CI](https://github.com/Kromey/serde_arrays/actions/workflows/rust.yml/badge.svg)](https://github.com/Kromey/serde_arrays/actions/workflows/rust.yml)
+
 A simple module to support serializing and deserializing const generic or arbitrarily-large arrays.
 
 ```
