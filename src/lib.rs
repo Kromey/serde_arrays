@@ -153,11 +153,13 @@ where
             cnt_filled += 1;
         };
         if let Some(err) = err {
-            for elem in std::array::IntoIter::new(arr).take(cnt_filled) {
-                // Safety: `assume_init()` is sound because we did initialize CNT_FILLED
-                // elements. We call it to drop the deserialized values.
-                unsafe {
-                    elem.assume_init();
+            if std::mem::needs_drop::<T>() {
+                for elem in std::array::IntoIter::new(arr).take(cnt_filled) {
+                    // Safety: `assume_init()` is sound because we did initialize CNT_FILLED
+                    // elements. We call it to drop the deserialized values.
+                    unsafe {
+                        elem.assume_init();
+                    }
                 }
             }
             return Err(err);
