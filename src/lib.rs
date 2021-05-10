@@ -83,7 +83,7 @@ use serde::{
     de::{self, Deserialize, Deserializer, SeqAccess, Visitor},
     ser::{Serialize, SerializeTuple, Serializer},
 };
-use std::{convert::TryInto, fmt, marker::PhantomData};
+use std::{fmt, marker::PhantomData, mem::MaybeUninit};
 
 /// Serialize const generic or arbitrarily-large arrays
 ///
@@ -129,20 +129,52 @@ where
     where
         A: SeqAccess<'de>,
     {
-        // Build a temporary container to hold our data as we deserialize it
-        // We can't rely on a Default<T> implementation, so we can't use an array here
-        let mut arr = Vec::with_capacity(N);
+        // Safety: `assume_init` is sound because the type we are claiming to have
+        // initialized here is a bunch of `MaybeUninit`s, which do not require
+        // initialization.
+        let mut arr: [MaybeUninit<T>; N] = unsafe { MaybeUninit::uninit().assume_init() };
 
-        while let Some(val) = seq.next_element()? {
-            arr.push(val);
+        // Iterate over the array and fill the elemenets with the ones obtained from
+        // `seq`.
+        let mut place_iter = arr.iter_mut();
+        let mut cnt_filled = 0;
+        let err = loop {
+            match (seq.next_element(), place_iter.next()) {
+                (Ok(Some(val)), Some(place)) => *place = MaybeUninit::new(val),
+                // no error, we're done
+                (Ok(None), None) => break None,
+                // error from serde, propagate it
+                (Err(e), _) => break Some(e),
+                // lengths do not match, report invalid_length
+                (Ok(None), Some(_)) | (Ok(Some(_)), None) => {
+                    break Some(de::Error::invalid_length(cnt_filled, &self))
+                }
+            }
+            cnt_filled += 1;
+        };
+        if let Some(err) = err {
+            if std::mem::needs_drop::<T>() {
+                for elem in std::array::IntoIter::new(arr).take(cnt_filled) {
+                    // Safety: `assume_init()` is sound because we did initialize CNT_FILLED
+                    // elements. We call it to drop the deserialized values.
+                    unsafe {
+                        elem.assume_init();
+                    }
+                }
+            }
+            return Err(err);
         }
 
-        // We can convert a Vec into an array via TryInto, which will fail if the length of the Vec
-        // doesn't match that of the array.
-        match arr.try_into() {
-            Ok(arr) => Ok(arr),
-            Err(arr) => Err(de::Error::invalid_length(arr.len(), &self)),
-        }
+        // Safety: everything is initialized and we are ready to transmute to the
+        // initialized array type.
+
+        // See https://github.com/rust-lang/rust/issues/62875#issuecomment-513834029
+        //let ret = unsafe { std::mem::transmute::<_, [T; N]>(arr) };
+
+        let ret = unsafe { std::mem::transmute_copy(&arr) };
+        std::mem::forget(arr);
+
+        Ok(ret)
     }
 }
 
