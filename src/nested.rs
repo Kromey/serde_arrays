@@ -50,12 +50,12 @@ impl<'a, T: Serialize, const N: usize> Serialize for ArrayWrap<'a, T, N> {
     }
 }
 
-pub trait NestedArray<T: Serialize, const N: usize> {
+pub trait SerializeArray<T: Serialize, const N: usize> {
     fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer;
 }
-impl<T: Serialize, const N: usize, const M: usize> NestedArray<T, N> for [[T; N]; M] {
+impl<T: Serialize, const N: usize, const M: usize> SerializeArray<T, N> for [[T; N]; M] {
     fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -70,7 +70,7 @@ impl<T: Serialize, const N: usize, const M: usize> NestedArray<T, N> for [[T; N]
         s.end()
     }
 }
-impl<T: Serialize, const N: usize> NestedArray<T, N> for Vec<[T; N]> {
+impl<T: Serialize, const N: usize> SerializeArray<T, N> for Vec<[T; N]> {
     fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -83,10 +83,18 @@ impl<T: Serialize, const N: usize> NestedArray<T, N> for Vec<[T; N]> {
         s.end()
     }
 }
+impl<T: Serialize, const N: usize> SerializeArray<T, N> for [T; N] {
+    fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        super::serialize(self, ser)
+    }
+}
 
 pub fn serialize<A, S, T, const N: usize>(data: &A, ser: S) -> Result<S::Ok, S::Error>
 where
-    A: NestedArray<T, N>,
+    A: SerializeArray<T, N>,
     S: Serializer,
     T: Serialize,
 {

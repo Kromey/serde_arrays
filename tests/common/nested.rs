@@ -24,3 +24,9 @@ pub struct VecArray<const N: usize> {
     #[serde(with = "serde_arrays::nested")]
     pub arr: Vec<[u32; N]>,
 }
+
+#[derive(Serialize, Debug, PartialEq, Eq)]
+pub struct FlatArray<const N: usize> {
+    #[serde(with = "serde_arrays::nested")]
+    pub arr: [u32; N],
+}
