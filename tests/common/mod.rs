@@ -7,6 +7,8 @@
 
 use serde::{Deserialize, Serialize};
 
+pub mod nested;
+
 /// A simple struct containing a const generic array
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct GenericArray<const N: usize> {

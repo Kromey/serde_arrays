@@ -85,6 +85,8 @@ use serde::{
 };
 use std::{fmt, marker::PhantomData, mem::MaybeUninit};
 
+pub mod nested;
+
 /// Serialize const generic or arbitrarily-large arrays
 ///
 /// For any array up to length `usize::MAX`, this function will allow Serde to properly serialize
