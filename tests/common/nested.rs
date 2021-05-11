@@ -5,7 +5,7 @@
 // https://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
-use serde::{Serialize};
+use serde::Serialize;
 
 #[derive(Serialize, Debug, PartialEq, Eq)]
 pub struct NestedArray<const N: usize> {

@@ -10,9 +10,11 @@ use common::nested::*;
 
 #[test]
 fn serialize_nested_array() {
-    let nested = NestedArray{ arr: [[1; 3]; 2] };
-    let generic = GenericNestedArray{ arr: [[1; 3]; 2] };
-    let vecced = VecArray{ arr: vec![[1; 3]; 2] };
+    let nested = NestedArray { arr: [[1; 3]; 2] };
+    let generic = GenericNestedArray { arr: [[1; 3]; 2] };
+    let vecced = VecArray {
+        arr: vec![[1; 3]; 2],
+    };
 
     let j_nested = serde_json::to_string(&nested).unwrap();
     let j_generic = serde_json::to_string(&generic).unwrap();
