@@ -9,24 +9,18 @@ use serde::Serialize;
 
 #[derive(Serialize, Debug, PartialEq, Eq)]
 pub struct NestedArray<const N: usize> {
-    #[serde(with = "serde_arrays::nested")]
+    #[serde(with = "serde_arrays")]
     pub arr: [[u32; N]; 2],
 }
 
 #[derive(Serialize, Debug, PartialEq, Eq)]
 pub struct GenericNestedArray<const N: usize, const M: usize> {
-    #[serde(with = "serde_arrays::nested")]
+    #[serde(with = "serde_arrays")]
     pub arr: [[u32; N]; M],
 }
 
 #[derive(Serialize, Debug, PartialEq, Eq)]
 pub struct VecArray<const N: usize> {
-    #[serde(with = "serde_arrays::nested")]
+    #[serde(with = "serde_arrays")]
     pub arr: Vec<[u32; N]>,
-}
-
-#[derive(Serialize, Debug, PartialEq, Eq)]
-pub struct FlatArray<const N: usize> {
-    #[serde(with = "serde_arrays::nested")]
-    pub arr: [u32; N],
 }

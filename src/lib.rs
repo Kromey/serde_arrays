@@ -67,6 +67,25 @@
 //! # Ok::<(), serde_json::Error>(())
 //! ```
 //!
+//! Even nested arrays are supported:
+//!
+//! ```
+//! # use serde::{Serialize, Deserialize};
+//! # use serde_json;
+//! #[derive(Serialize, Debug, PartialEq, Eq)]
+//! struct NestedArray {
+//!     #[serde(with = "serde_arrays")]
+//!     arr: [[u32; 64]; 64],
+//!     #[serde(with = "serde_arrays")]
+//!     vec: Vec<[u32; 96]>,
+//! }
+//! # let data = NestedArray{ arr: [[1; 64]; 64], vec: vec![[2; 96]; 37], };
+//! # let json = serde_json::to_string(&data)?;
+//! # //let de_data = serde_json::from_str(&json)?;
+//! # //assert_eq!(data, de_data);
+//! # Ok::<(), serde_json::Error>(())
+//! ```
+//!
 //! # MSRV
 //!
 //! This library relies on the const generics feature introduced in Rust 1.51.0.
@@ -74,39 +93,39 @@
 //! # Relevant links
 //!
 //!  * The [Serde issue](https://github.com/serde-rs/serde/issues/1937) for const generics support
-//!  * [serde-big-array](https://crates.io/crates/serde-big-array) is a similar crate, but it
-//!    depends on `unsafe` code (whether its use of such is safe or not is beyond this scope)
+//!  * [serde-big-array](https://crates.io/crates/serde-big-array) is a similar crate for large
+//!    arrays and const generic arrays
+//!  * [serde_with](https://crates.io/crates/serde_with/) is a much more flexible and powerful
+//!    crate, but with arguably more complex ergonomics
 //!
 //! [Serde]: https://serde.rs/
 
 use serde::{
     de::{self, Deserialize, Deserializer, SeqAccess, Visitor},
-    ser::{Serialize, SerializeTuple, Serializer},
+    ser::{Serialize, Serializer},
 };
 use std::{fmt, marker::PhantomData, mem::MaybeUninit};
 
-pub mod nested;
+#[doc(hidden)]
+pub mod serializable;
+mod wrapper;
+pub use serializable::Serializable;
 
 /// Serialize const generic or arbitrarily-large arrays
 ///
-/// For any array up to length `usize::MAX`, this function will allow Serde to properly serialize
-/// it, provided of course that the type `T` is itself serializable.
+/// Types must implement the [`Serializable`] trait; while this requirement sharply limits how
+/// composable the final result is, the simple ergonomics make up for it.
 ///
-/// This implementation is adapted from the [Serde documentataion][serialize_map]
+/// For greater flexibility see [`serde_with`][serde_with].
 ///
-/// [serialize_map]: https://serde.rs/impl-serialize.html#serializing-a-sequence-or-map
-pub fn serialize<S, T, const N: usize>(data: &[T; N], ser: S) -> Result<S::Ok, S::Error>
+/// [serde_with]: https://crates.io/crates/serde_with/
+pub fn serialize<A, S, T, const N: usize>(data: &A, ser: S) -> Result<S::Ok, S::Error>
 where
+    A: Serializable<T, N>,
     S: Serializer,
     T: Serialize,
 {
-    // Fixed-length structures, including arrays, are supported in Serde as tuples
-    // See: https://serde.rs/impl-serialize.html#serializing-a-tuple
-    let mut s = ser.serialize_tuple(N)?;
-    for item in data {
-        s.serialize_element(item)?;
-    }
-    s.end()
+    data.serialize(ser)
 }
 
 /// A Serde Deserializer `Visitor` for [T; N] arrays

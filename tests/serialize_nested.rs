@@ -25,10 +25,3 @@ fn serialize_nested_array() {
     assert_eq!(json, &j_generic);
     assert_eq!(json, &j_vecced);
 }
-
-#[test]
-fn serialize_flat_as_nested() {
-    let flat = FlatArray { arr: [1; 3] };
-    let j_flat = serde_json::to_string(&flat).unwrap();
-    assert_eq!("{\"arr\":[1,1,1]}", &j_flat);
-}
