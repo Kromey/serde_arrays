@@ -25,7 +25,7 @@ jobs:
           ~/.cargo/git
           target
         key: ${{ runner.os }}-stable-cargo-${{ hashFiles('**/Cargo.toml') }}
-    - uses: actions-rs/toolchain@v1
+    - uses: actions-rs/toolchain@v1.0.7
       with:
         profile: minimal
         toolchain: stable
@@ -46,7 +46,7 @@ jobs:
           ~/.cargo/git
           target
         key: ${{ runner.os }}-stable-cargo-${{ hashFiles('**/Cargo.toml') }}
-    - uses: actions-rs/toolchain@v1
+    - uses: actions-rs/toolchain@v1.0.7
       with:
         profile: minimal
         toolchain: stable
@@ -78,7 +78,7 @@ jobs:
           target
         key: ${{ runner.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('**/Cargo.toml') }}
     - name: Install minimal ${{ matrix.rust }}
-      uses: actions-rs/toolchain@v1
+      uses: actions-rs/toolchain@v1.0.7
       with:
         profile: minimal
         toolchain: ${{ matrix.rust }}
