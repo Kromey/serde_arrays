@@ -8,6 +8,9 @@
 use crate::wrapper::ArrayWrap;
 use serde::ser::{Serialize, SerializeSeq, SerializeTuple, Serializer};
 
+#[cfg(not(feature = "std"))]
+use heapless::Vec;
+
 /// Trait for types serializable using `serde_arrays`
 ///
 /// In order to serialize data using this crate, the type needs to implement this trait. While this
@@ -39,7 +42,23 @@ impl<T: Serialize, const N: usize, const M: usize> Serializable<T, N> for [[T; N
     }
 }
 
+#[cfg(feature = "std")]
 impl<T: Serialize, const N: usize> Serializable<T, N> for Vec<[T; N]> {
+    fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut s = ser.serialize_seq(Some(self.len()))?;
+        for item in self {
+            let wrapped = ArrayWrap::new(item);
+            s.serialize_element(&wrapped)?;
+        }
+        s.end()
+    }
+}
+
+#[cfg(not(feature = "std"))]
+impl<T: Serialize, const N: usize, const M: usize> Serializable<T, N> for Vec<[T; N], M> {
     fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
