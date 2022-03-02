@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3
     - uses: actions/cache@v2.1.7
       with:
         path: |
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3
     - uses: actions/cache@v2.1.7
       with:
         path: |
@@ -69,7 +69,7 @@ jobs:
         - nightly
 
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3
     - uses: actions/cache@v2.1.7
       with:
         path: |
