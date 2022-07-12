@@ -11,17 +11,31 @@ use common::nested::*;
 #[test]
 fn serialize_nested_array() {
     let nested = NestedArray { arr: [[1; 3]; 2] };
+
+    let j_nested = serde_json::to_string(&nested).unwrap();
+
+    let json = "{\"arr\":[[1,1,1],[1,1,1]]}";
+    assert_eq!(json, &j_nested);
+}
+
+#[test]
+fn serialize_generic_nested_array() {
     let generic = GenericNestedArray { arr: [[1; 3]; 2] };
+
+    let j_generic = serde_json::to_string(&generic).unwrap();
+
+    let json = "{\"arr\":[[1,1,1],[1,1,1]]}";
+    assert_eq!(json, &j_generic);
+}
+
+#[test]
+fn serialize_array_in_vec() {
     let vecced = VecArray {
         arr: vec![[1; 3]; 2],
     };
 
-    let j_nested = serde_json::to_string(&nested).unwrap();
-    let j_generic = serde_json::to_string(&generic).unwrap();
     let j_vecced = serde_json::to_string(&vecced).unwrap();
 
     let json = "{\"arr\":[[1,1,1],[1,1,1]]}";
-    assert_eq!(json, &j_nested);
-    assert_eq!(json, &j_generic);
     assert_eq!(json, &j_vecced);
 }
