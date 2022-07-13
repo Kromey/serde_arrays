@@ -7,6 +7,9 @@
 
 use serde::Serialize;
 
+#[cfg(not(feature = "std"))]
+use heapless::Vec;
+
 #[derive(Serialize, Debug, PartialEq, Eq)]
 pub struct NestedArray<const N: usize> {
     #[serde(with = "serde_arrays")]
@@ -19,8 +22,16 @@ pub struct GenericNestedArray<const N: usize, const M: usize> {
     pub arr: [[u32; N]; M],
 }
 
+#[cfg(feature = "std")]
 #[derive(Serialize, Debug, PartialEq, Eq)]
 pub struct VecArray<const N: usize> {
     #[serde(with = "serde_arrays")]
     pub arr: Vec<[u32; N]>,
+}
+
+#[cfg(not(feature = "std"))]
+#[derive(Serialize, Debug, PartialEq, Eq)]
+pub struct VecArray<const N: usize, const M: usize> {
+    #[serde(with = "serde_arrays")]
+    pub arr: Vec<[u32; N], M>,
 }

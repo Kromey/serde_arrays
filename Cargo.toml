@@ -1,6 +1,6 @@
 [package]
 name = "serde_arrays"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Travis Veazey <travisvz@gmail.com>"]
 edition = "2018"
 resolver = "2" # New resolver keeps the dev-dependencies features separate
@@ -11,8 +11,14 @@ keywords = ["serde", "serialization", "const-generics"]
 categories = ["encoding"]
 exclude = ["/.github/*"]
 
+[features]
+default = ["std"]
+std = []
+no-std = ["heapless"]
+
 [dependencies]
-serde = { version = "1.0" }
+serde = { version = "1.0", default-features = false }
+heapless = { version = "0.7", optional = true }
 
 [dev-dependencies]
 serde = { version = "1.0", features = ["derive"] }
