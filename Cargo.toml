@@ -2,7 +2,7 @@
 name = "serde_arrays"
 version = "0.1.0"
 authors = ["Travis Veazey <travisvz@gmail.com>"]
-edition = "2018"
+edition = "2021"
 resolver = "2" # New resolver keeps the dev-dependencies features separate
 description = "A simple module to support serializing and deserializing const generic or arbitrarily-large arrays."
 repository = "https://github.com/Kromey/serde_arrays"
@@ -12,8 +12,12 @@ categories = ["encoding"]
 exclude = ["/.github/*"]
 
 [dependencies]
-serde = { version = "1.0" }
+serde = { version = "1.0", default-features = false }
+
+[features]
+default = ["std"]
+std = []
 
 [dev-dependencies]
-serde = { version = "1.0", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"], default-features = false }
 serde_json = "1.0"
