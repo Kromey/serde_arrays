@@ -6,7 +6,7 @@
 
 A simple module to support serializing and deserializing const generic or arbitrarily-large arrays.
 
-```
+```rust
 use serde::{Serialize, Deserialize};
 use serde_json;
 
@@ -21,7 +21,6 @@ let json = serde_json::to_string(&data)?;
 let de_data = serde_json::from_str(&json)?;
 
 assert_eq!(data, de_data);
-# Ok::<(), serde_json::Error>(())
 ```
 
 ## MSRV
