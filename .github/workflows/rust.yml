@@ -18,6 +18,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3.2.0
+    - uses: actions/cache@v3.0.8
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-stable-cargo-${{ hashFiles('**/Cargo.toml') }}
     - uses: dtolnay/rust-toolchain@stable
       with:
         components: rustfmt
@@ -29,6 +36,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3.2.0
+    - uses: actions/cache@v3.0.8
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-stable-cargo-${{ hashFiles('**/Cargo.toml') }}
     - uses: dtolnay/rust-toolchain@stable
       with:
         components: clippy
@@ -47,9 +61,22 @@ jobs:
         - stable
         - beta
         - nightly
+        exclude:
+        - os: macOS-latest # MacOS 12 doesn't compile with Rust 1.51
+          rust: 1.51.0
+        include:
+        - os: macOS-11
+          rust: 1.51.0
 
     steps:
     - uses: actions/checkout@v3.2.0
+    - uses: actions/cache@v3.0.8
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('**/Cargo.toml') }}
     - name: Install minimal ${{ matrix.rust }}
       uses: dtolnay/rust-toolchain@master
       with:
