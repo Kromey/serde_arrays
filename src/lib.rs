@@ -70,6 +70,9 @@
 //! Even nested arrays are supported:
 //!
 //! ```
+//! # #[cfg(feature = "std")]
+//! # {
+//! # use std::io;    
 //! # use serde::{Serialize, Deserialize};
 //! # use serde_json;
 //! #[derive(Serialize, Debug, PartialEq, Eq)]
@@ -79,11 +82,14 @@
 //!     #[serde(with = "serde_arrays")]
 //!     vec: Vec<[u32; 96]>,
 //! }
+//! # fn main() -> io::Result<()> {
 //! # let data = NestedArray{ arr: [[1; 64]; 64], vec: vec![[2; 96]; 37], };
 //! # let json = serde_json::to_string(&data)?;
 //! # //let de_data = serde_json::from_str(&json)?;
 //! # //assert_eq!(data, de_data);
-//! # Ok::<(), serde_json::Error>(())
+//! # Ok(())
+//! # }
+//! # }
 //! ```
 //!
 //! # MSRV
@@ -100,11 +106,13 @@
 //!
 //! [Serde]: https://serde.rs/
 
+#![cfg_attr(not(feature = "std"), no_std)]
+
+use core::{fmt, marker::PhantomData, mem::MaybeUninit};
 use serde::{
     de::{self, Deserialize, Deserializer, SeqAccess, Visitor},
     ser::{Serialize, Serializer},
 };
-use std::{fmt, marker::PhantomData, mem::MaybeUninit};
 
 #[doc(hidden)]
 pub mod serializable;
@@ -174,8 +182,8 @@ where
             cnt_filled += 1;
         };
         if let Some(err) = err {
-            if std::mem::needs_drop::<T>() {
-                for elem in std::array::IntoIter::new(arr).take(cnt_filled) {
+            if core::mem::needs_drop::<T>() {
+                for elem in core::array::IntoIter::new(arr).take(cnt_filled) {
                     // Safety: `assume_init()` is sound because we did initialize CNT_FILLED
                     // elements. We call it to drop the deserialized values.
                     unsafe {
@@ -192,8 +200,8 @@ where
         // See https://github.com/rust-lang/rust/issues/62875#issuecomment-513834029
         //let ret = unsafe { std::mem::transmute::<_, [T; N]>(arr) };
 
-        let ret = unsafe { std::mem::transmute_copy(&arr) };
-        std::mem::forget(arr);
+        let ret = unsafe { core::mem::transmute_copy(&arr) };
+        core::mem::forget(arr);
 
         Ok(ret)
     }
