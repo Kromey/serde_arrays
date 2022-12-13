@@ -60,7 +60,6 @@ jobs:
         - 1.51.0 # MSRV
         - stable
         - beta
-        - nightly
         exclude:
         - os: macOS-latest # MacOS 12 doesn't compile with Rust 1.51
           rust: 1.51.0
