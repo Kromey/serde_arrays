@@ -100,11 +100,17 @@
 //!
 //! [Serde]: https://serde.rs/
 
+#![no_std]
+
+use core::{
+    fmt,
+    marker::PhantomData,
+    mem::{forget, needs_drop, transmute_copy, MaybeUninit},
+};
 use serde::{
     de::{self, Deserialize, Deserializer, SeqAccess, Visitor},
     ser::{Serialize, Serializer},
 };
-use std::{fmt, marker::PhantomData, mem::MaybeUninit};
 
 #[doc(hidden)]
 pub mod serializable;
@@ -174,8 +180,8 @@ where
             cnt_filled += 1;
         };
         if let Some(err) = err {
-            if std::mem::needs_drop::<T>() {
-                for elem in std::array::IntoIter::new(arr).take(cnt_filled) {
+            if needs_drop::<T>() {
+                for elem in IntoIterator::into_iter(arr).take(cnt_filled) {
                     // Safety: `assume_init()` is sound because we did initialize CNT_FILLED
                     // elements. We call it to drop the deserialized values.
                     unsafe {
@@ -192,8 +198,8 @@ where
         // See https://github.com/rust-lang/rust/issues/62875#issuecomment-513834029
         //let ret = unsafe { std::mem::transmute::<_, [T; N]>(arr) };
 
-        let ret = unsafe { std::mem::transmute_copy(&arr) };
-        std::mem::forget(arr);
+        let ret = unsafe { transmute_copy(&arr) };
+        forget(arr);
 
         Ok(ret)
     }

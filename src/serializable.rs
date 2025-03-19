@@ -7,6 +7,8 @@
 
 use crate::wrapper::ArrayWrap;
 use serde::ser::{Serialize, SerializeSeq, SerializeTuple, Serializer};
+extern crate alloc;
+use alloc::vec::Vec;
 
 /// Trait for types serializable using `serde_arrays`
 ///
