@@ -105,7 +105,7 @@
 use core::{
     fmt,
     marker::PhantomData,
-    mem::{forget, needs_drop, transmute_copy, MaybeUninit},
+    mem::{needs_drop, transmute_copy, MaybeUninit},
 };
 use serde::{
     de::{self, Deserialize, Deserializer, SeqAccess, Visitor},
@@ -199,7 +199,6 @@ where
         //let ret = unsafe { std::mem::transmute::<_, [T; N]>(arr) };
 
         let ret = unsafe { transmute_copy(&arr) };
-        forget(arr);
 
         Ok(ret)
     }
