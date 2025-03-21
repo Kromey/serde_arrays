@@ -2,7 +2,7 @@
 name = "serde_arrays"
 version = "0.1.0"
 authors = ["Travis Veazey <travisvz@gmail.com>"]
-edition = "2021"
+edition = "2018"
 resolver = "2" # New resolver keeps the dev-dependencies features separate
 description = "A simple module to support serializing and deserializing const generic or arbitrarily-large arrays."
 repository = "https://github.com/Kromey/serde_arrays"
