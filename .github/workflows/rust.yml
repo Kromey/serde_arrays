@@ -60,6 +60,9 @@ jobs:
         - 1.51.0 # MSRV
         - stable
         - beta
+        features:
+        - default
+        - alloc
         exclude:
         - os: macOS-latest # MacOS 12 (and later) doesn't compile with Rust 1.51
           rust: 1.51.0
@@ -86,6 +89,6 @@ jobs:
         cargo update -p proc-macro2 --precise 1.0.26
       if: matrix.rust == '1.51.0'
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --no-default-features --features "${{ matrix.features }}"
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test --verbose --no-default-features --features "${{ matrix.features }}"
