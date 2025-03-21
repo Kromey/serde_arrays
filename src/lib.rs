@@ -70,19 +70,19 @@
 //! Nested arrays can be serialized as well:
 //!
 //! ```
-//! # use serde::{Serialize, Deserialize};
+//! # use serde::Serialize;
 //! # use serde_json;
 //! #[derive(Serialize, Debug, PartialEq, Eq)]
 //! struct NestedArray {
 //!     #[serde(with = "serde_arrays")]
 //!     arr: [[u32; 64]; 64],
-//! #   #[cfg(any(feature = "std", feature = "alloc"))]
+//! #   #[cfg(feature = "alloc")]
 //!     #[serde(with = "serde_arrays")]
 //!     vec: Vec<[u32; 96]>,
 //! }
 //! # let data = NestedArray{
 //! #   arr: [[1; 64]; 64],
-//! #   #[cfg(any(feature = "std", feature = "alloc"))]
+//! #   #[cfg(feature = "alloc")]
 //! #   vec: vec![[2; 96]; 37],
 //! # };
 //! # let json = serde_json::to_string(&data)?;
@@ -103,7 +103,7 @@
 //!   [u32; N],
 //! );
 //! 
-//! #[derive(Serialize, Debug, PartialEq, Eq)]
+//! #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 //! struct NestedArray {
 //!     #[serde(with = "serde_arrays")]
 //!     arr: [WrappedArray<64>; 64],
@@ -114,10 +114,17 @@
 //! #   vec: vec![WrappedArray([2; 96]); 37],
 //! # };
 //! # let json = serde_json::to_string(&data)?;
-//! # //let de_data = serde_json::from_str(&json)?;
-//! # //assert_eq!(data, de_data);
+//! # let de_data = serde_json::from_str(&json)?;
+//! # assert_eq!(data, de_data);
 //! # Ok::<(), serde_json::Error>(())
 //! ```
+//! 
+//! # no_std Compatibility
+//! 
+//! This crate is `no_std` compatible by default.
+//! 
+//! If you need to support serialization of e.g. `Vec<[T; N]>` you can enable the `alloc` feature;
+//! alternatively, using a wrapper struct as shown above can be done without the `alloc` feature.
 //!
 //! # MSRV
 //!
@@ -133,7 +140,7 @@
 //!
 //! [Serde]: https://serde.rs/
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
 
 use core::{fmt, marker::PhantomData, mem::MaybeUninit};
 use serde::{

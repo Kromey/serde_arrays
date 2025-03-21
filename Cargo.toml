@@ -15,8 +15,7 @@ exclude = ["/.github/*"]
 serde = { version = "1.0", default-features = false }
 
 [features]
-default = ["std"]
-std = []
+default = []
 alloc = ["serde/alloc"]
 
 [dev-dependencies]

@@ -43,7 +43,7 @@ impl<T: Serialize, const N: usize, const M: usize> Serializable<T, N> for [[T; N
     }
 }
 
-#[cfg(any(feature = "std", feature = "alloc"))]
+#[cfg(feature = "alloc")]
 impl<T: Serialize, const N: usize> Serializable<T, N> for Vec<[T; N]> {
     fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
     where
