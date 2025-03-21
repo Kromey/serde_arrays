@@ -61,10 +61,7 @@ jobs:
         - stable
         - beta
         exclude:
-        - os: macOS-latest # MacOS 12 doesn't compile with Rust 1.51
-          rust: 1.51.0
-        include:
-        - os: macOS-11
+        - os: macOS-latest # MacOS 12 (and later) doesn't compile with Rust 1.51
           rust: 1.51.0
 
     steps:
