@@ -17,6 +17,7 @@ serde = { version = "1.0", default-features = false }
 [features]
 default = ["std"]
 std = []
+alloc = ["serde/alloc"]
 
 [dev-dependencies]
 serde = { version = "1.0", features = ["derive"], default-features = false }

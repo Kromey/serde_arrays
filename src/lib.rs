@@ -67,7 +67,7 @@
 //! # Ok::<(), serde_json::Error>(())
 //! ```
 //!
-//! Even nested arrays are supported:
+//! Nested arrays can be serialized as well:
 //!
 //! ```
 //! # use serde::{Serialize, Deserialize};
@@ -76,10 +76,43 @@
 //! struct NestedArray {
 //!     #[serde(with = "serde_arrays")]
 //!     arr: [[u32; 64]; 64],
+//! #   #[cfg(any(feature = "std", feature = "alloc"))]
 //!     #[serde(with = "serde_arrays")]
 //!     vec: Vec<[u32; 96]>,
 //! }
-//! # let data = NestedArray{ arr: [[1; 64]; 64], vec: vec![[2; 96]; 37], };
+//! # let data = NestedArray{
+//! #   arr: [[1; 64]; 64],
+//! #   #[cfg(any(feature = "std", feature = "alloc"))]
+//! #   vec: vec![[2; 96]; 37],
+//! # };
+//! # let json = serde_json::to_string(&data)?;
+//! # //let de_data = serde_json::from_str(&json)?;
+//! # //assert_eq!(data, de_data);
+//! # Ok::<(), serde_json::Error>(())
+//! ```
+//! 
+//! Currently, nested arrays cannot be deserialized. If you need to deserialize nested arrays, try
+//! using a wrapper struct:
+//! 
+//! ```
+//! # use serde::{Serialize, Deserialize};
+//! # use serde_json;
+//! #[derive(Clone, Copy, Serialize, Deserialize, Debug, PartialEq, Eq)]
+//! struct WrappedArray<const N: usize> (
+//!    #[serde(with = "serde_arrays")]
+//!   [u32; N],
+//! );
+//! 
+//! #[derive(Serialize, Debug, PartialEq, Eq)]
+//! struct NestedArray {
+//!     #[serde(with = "serde_arrays")]
+//!     arr: [WrappedArray<64>; 64],
+//!     vec: Vec<WrappedArray<96>>,
+//! }
+//! # let data = NestedArray{
+//! #   arr: [WrappedArray([1; 64]); 64],
+//! #   vec: vec![WrappedArray([2; 96]); 37],
+//! # };
 //! # let json = serde_json::to_string(&data)?;
 //! # //let de_data = serde_json::from_str(&json)?;
 //! # //assert_eq!(data, de_data);

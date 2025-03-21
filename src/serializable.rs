@@ -6,7 +6,11 @@
 // copied, modified, or distributed except according to those terms.
 
 use crate::wrapper::ArrayWrap;
-use serde::ser::{Serialize, SerializeSeq, SerializeTuple, Serializer};
+use serde::ser::{Serialize, SerializeTuple, Serializer};
+#[cfg(feature = "alloc")]
+extern crate alloc;
+#[cfg(feature = "alloc")]
+use alloc::vec::Vec;
 
 /// Trait for types serializable using `serde_arrays`
 ///
@@ -39,12 +43,13 @@ impl<T: Serialize, const N: usize, const M: usize> Serializable<T, N> for [[T; N
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", feature = "alloc"))]
 impl<T: Serialize, const N: usize> Serializable<T, N> for Vec<[T; N]> {
     fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
+        use serde::ser::SerializeSeq;
         let mut s = ser.serialize_seq(Some(self.len()))?;
         for item in self {
             let wrapped = ArrayWrap::new(item);
