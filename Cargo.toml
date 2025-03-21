@@ -1,6 +1,6 @@
 [package]
 name = "serde_arrays"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Travis Veazey <travisvz@gmail.com>"]
 edition = "2018"
 resolver = "2" # New resolver keeps the dev-dependencies features separate
