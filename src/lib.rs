@@ -177,6 +177,8 @@ where
         };
         if let Some(err) = err {
             if core::mem::needs_drop::<T>() {
+                #[allow(deprecated)]
+                // The alternative IntoIterator::into_iter is not available in 1.51.0, our MSRV
                 for elem in core::array::IntoIter::new(arr).take(cnt_filled) {
                     // Safety: `assume_init()` is sound because we did initialize CNT_FILLED
                     // elements. We call it to drop the deserialized values.
@@ -195,7 +197,7 @@ where
         //let ret = unsafe { core::mem::transmute::<_, [T; N]>(arr) };
 
         let ret = unsafe { core::mem::transmute_copy(&arr) };
-        core::mem::forget(arr);
+        // core::mem::forget(arr); // MaybeUninit doesn't need to be forgotten
 
         Ok(ret)
     }

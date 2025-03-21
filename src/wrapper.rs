@@ -17,7 +17,7 @@ impl<'a, T: Serialize, const N: usize> ArrayWrap<'a, T, N> {
     }
 }
 
-impl<'a, T: Serialize, const N: usize> Serialize for ArrayWrap<'a, T, N> {
+impl<T: Serialize, const N: usize> Serialize for ArrayWrap<'_, T, N> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
