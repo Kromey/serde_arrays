@@ -80,6 +80,14 @@ jobs:
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: ${{ matrix.rust }}
+    - name: Ensure compatible dependencies
+      run: |
+        cargo update -p serde_json --precise 1.0.64
+        cargo update -p serde --precise 1.0.125
+        cargo update -p quote --precise 1.0.9
+        cargo update -p syn --precise 1.0.72
+        cargo update -p proc-macro2 --precise 1.0.26
+      if: matrix.rust == '1.51.0'
     - name: Build
       run: cargo build --verbose
     - name: Run tests
