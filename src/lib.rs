@@ -90,10 +90,10 @@
 //! # //assert_eq!(data, de_data);
 //! # Ok::<(), serde_json::Error>(())
 //! ```
-//! 
+//!
 //! Currently, nested arrays cannot be deserialized. If you need to deserialize nested arrays, try
 //! using a wrapper struct:
-//! 
+//!
 //! ```
 //! # use serde::{Serialize, Deserialize};
 //! # use serde_json;
@@ -102,7 +102,7 @@
 //!    #[serde(with = "serde_arrays")]
 //!   [u32; N],
 //! );
-//! 
+//!
 //! #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 //! struct NestedArray {
 //!     #[serde(with = "serde_arrays")]
@@ -118,11 +118,11 @@
 //! # assert_eq!(data, de_data);
 //! # Ok::<(), serde_json::Error>(())
 //! ```
-//! 
+//!
 //! # no_std Compatibility
-//! 
+//!
 //! This crate is `no_std` compatible by default.
-//! 
+//!
 //! If you need to support serialization of e.g. `Vec<[T; N]>` you can enable the `alloc` feature;
 //! alternatively, using a wrapper struct as shown above can be done without the `alloc` feature.
 //!
