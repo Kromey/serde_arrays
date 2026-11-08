@@ -92,3 +92,16 @@ jobs:
       run: cargo build --verbose --no-default-features --features "${{ matrix.features }}"
     - name: Run tests
       run: cargo test --verbose --no-default-features --features "${{ matrix.features }}"
+
+  miri:
+    name: Miri
+    needs: [rustfmt, clippy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@miri
+      - run: cargo miri setup
+      - run: cargo miri test
+        env:
+          MIRIFLAGS: -Zmiri-strict-provenance
